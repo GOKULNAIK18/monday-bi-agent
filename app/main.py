@@ -1,3 +1,6 @@
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
 import pandas as pd
 from fastapi import FastAPI
 from app.monday_client import fetch_board_items
@@ -20,6 +23,8 @@ class QueryRequest(BaseModel):
     question: str
 
 app = FastAPI()
+templates = Jinja2Templates(directory="app/templates")
+
 
 @app.get("/inspect-work-orders")
 def inspect_work_orders():
@@ -104,6 +109,11 @@ def get_data_quality():
         "deals_issues": deals_issues,
         "work_orders_issues": work_issues,
     }
+
+@app.get("/chat", response_class=HTMLResponse)
+def chat_ui(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
 
 
 if __name__ == "__main__":
